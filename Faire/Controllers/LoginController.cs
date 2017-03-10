@@ -7,6 +7,9 @@ using System.Web.Mvc;
 using System.Web.Mvc.Ajax;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Bson;
+using MongoDB.Driver;
+using MongoDB.Bson;
 
 namespace Faire.Controllers
 {
@@ -17,6 +20,20 @@ namespace Faire.Controllers
 	public class LoginController : Controller
 	{	
 		private Dictionary<String, String> ListOfUsers = new Dictionary<String, String>();
+		protected static MongoClient client = new MongoClient();
+		protected static IMongoDatabase database = client.GetDatabase("users");
+		public void GetData() {
+			var collection = database.GetCollection<BsonDocument>("users");
+			var documents = collection.Find(new BsonDocument()).ToListAsync();
+			var j = JsonConvert.SerializeObject(documents);
+			JObject json = JObject.Parse(j);
+			Console.WriteLine(json);
+			foreach (var item in json) {
+				//ListOfUsers.Add(json[item].user, json.pass);
+
+			}
+		}
+
 		public ActionResult Index ()
 		{
 			return Content ("Hello");
